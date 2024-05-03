@@ -1,23 +1,37 @@
 package com.driver.controllers;
 
-import com.driver.services.impl.PaymentServiceImpl;
+import com.driver.models.Payment;
+import com.driver.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/payment")
 public class PaymentController {
-	
-	@Autowired
-    PaymentServiceImpl paymentService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @PostMapping("/pay")
-    public Payment pay(@RequestParam Integer reservationId, @RequestParam Integer amountSent, @RequestParam String mode) throws Exception{
-        //Attempt a payment of amountSent for reservationId using the given mode ("cASh", "card", or "upi")
-        //If the amountSent is less than bill, throw "Insufficient Amount" exception, otherwise update payment attributes
-        //If the mode contains a string other than "cash", "card", or "upi" (any character in uppercase or lowercase), throw "Payment mode not detected" exception.
-        //Note that the reservationId always exists
-        return null
+    public Payment pay(@RequestParam Integer reservationId, @RequestParam Integer amountSent, @RequestParam String mode) throws Exception {
+        // Validate payment mode
+        if (!isValidPaymentMode(mode)) {
+            throw new Exception("Payment mode not detected");
+        }
+
+        // Check if the amount sent is sufficient
+        if (!paymentService.isAmountSufficient(reservationId, amountSent)) {
+            throw new Exception("Insufficient Amount");
+        }
+
+        // Update payment attributes for the reservation
+        return paymentService.processPayment(reservationId, amountSent, mode);
+    }
+
+    // Validate payment mode
+    private boolean isValidPaymentMode(String mode) {
+        return mode.equalsIgnoreCase("cash") || mode.equalsIgnoreCase("card") || mode.equalsIgnoreCase("upi");
     }
 }
