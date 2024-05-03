@@ -1,3 +1,15 @@
+package com.driver.controllers;
+
+import com.driver.model.ParkingLot;
+import com.driver.model.Spot;
+import com.driver.services.ParkingLotService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/parking-lots")
 public class ParkingLotController {
@@ -13,7 +25,7 @@ public class ParkingLotController {
 
     @PostMapping("/{parkingLotId}/spot/add")
     public ResponseEntity<Spot> addSpot(@PathVariable int parkingLotId, @RequestParam Integer numberOfWheels, @RequestParam Integer pricePerHour) {
-        Spot newSpot = parkingLotService.addSpotToParkingLot(parkingLotId, numberOfWheels, pricePerHour);
+        Spot newSpot = parkingLotService.addSpot(parkingLotId, numberOfWheels, pricePerHour);
         return new ResponseEntity<>(newSpot, HttpStatus.CREATED);
     }
 
@@ -25,7 +37,7 @@ public class ParkingLotController {
 
     @PutMapping("/{parkingLotId}/spot/{spotId}/update")
     public ResponseEntity<Spot> updateSpot(@PathVariable int parkingLotId, @PathVariable int spotId, @RequestParam int pricePerHour) {
-        Spot updatedSpot = parkingLotService.updateSpotDetails(parkingLotId, spotId, pricePerHour);
+        Spot updatedSpot = parkingLotService.updateSpot(parkingLotId, spotId, pricePerHour);
         return new ResponseEntity<>(updatedSpot, HttpStatus.OK);
     }
 
